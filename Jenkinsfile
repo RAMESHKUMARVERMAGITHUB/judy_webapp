@@ -102,7 +102,7 @@ pipeline{
                     // dir('kubernetes-configmap-reload') {
                       withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
                       sh 'kubectl delete --all pods'
-                      sh 'kubectl apply -f deployment.yaml'
+                      sh 'kubectl apply -f deployment.yam'
                       // sh 'kubectl apply -f service.yml'
                       }   
                     // }
