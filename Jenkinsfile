@@ -18,24 +18,24 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'main', url: 'https://github.com/RAMESHKUMARVERMAGITHUB/spring-cloud-kubernetes.git'
+                git branch: 'devops', url: 'https://github.com/rameshkumarvermagithub/judy_webapp.git'
             }
         }
         stage('Maven Build'){
             steps{
-                sh 'cd kubernetes-configmap-reload && mvn clean package'
+                sh 'mvn clean package'
             }
         }
         stage("Test Application"){
             steps {
-                sh "cd kubernetes-configmap-reload && mvn test"
+                sh "mvn test"
             }
         }
         stage("Sonarqube Analysis") {
             steps {
                 script {
                     withSonarQubeEnv(credentialsId: 'sonar') {
-                        sh "cd kubernetes-configmap-reload && mvn sonar:sonar"
+                        sh "mvn sonar:sonar"
                     }
                 }
             }
@@ -76,7 +76,7 @@ pipeline{
         }
         stage('TRIVY FS SCAN') {
             steps {
-                sh "cd kubernetes-configmap-reload && trivy fs . > trivyfs.txt"
+                sh "trivy fs . > trivyfs.txt"
             }
         }
         stage("Docker Build & Push"){
@@ -84,16 +84,16 @@ pipeline{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){ 
                        // sh "docker pull chydinma/app:1"
-                      sh "cd kubernetes-configmap-reload && docker build -t rameshkumarverma/kubernetes-configmap-reload:latest ."
-                       // sh "docker tag chydinma/app:1 rameshkumarverma/myprojectapp:latest"
-                       sh "cd kubernetes-configmap-reload && docker push rameshkumarverma/kubernetes-configmap-reload:latest "
+                      sh "docker build -t rameshkumarverma/judi_webapp:latest ."
+                       // sh "docker tag chydinma/app:1 rameshkumarverma/judi_webapp:latest"
+                       sh "docker push rameshkumarverma/judi_webapp:latest "
                     }
                 }
             }
         }
         stage("TRIVY"){
             steps{
-                sh "cd kubernetes-configmap-reload && trivy image rameshkumarverma/kubernetes-configmap-reload:latest > trivyimage.txt" 
+                sh "trivy image rameshkumarverma/judi_webapp:latest > trivyimage.txt" 
             }
         }
         stage('Deploy to Kubernets'){
@@ -102,8 +102,8 @@ pipeline{
                     dir('kubernetes-configmap-reload') {
                       withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
                       sh 'kubectl delete --all pods'
-                      sh 'kubectl apply -f deployment.yml'
-                      sh 'kubectl apply -f service.yml'
+                      sh 'kubectl apply -f deployment.yaml'
+                      // sh 'kubectl apply -f service.yml'
                       }   
                     }
                 }
