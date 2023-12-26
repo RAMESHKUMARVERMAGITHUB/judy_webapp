@@ -16,7 +16,7 @@ spec:
       - name: myjavaapp
         image: rameshkumarverma/judi_webapp:latest
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
 
 ---
 apiVersion: v1
